@@ -549,25 +549,6 @@ void lv_textarea_set_password_show_time(lv_obj_t * obj, uint16_t time)
     ta->pwd_show_time = time;
 }
 
-void lv_textarea_set_align(lv_obj_t * obj, lv_text_align_t align)
-{
-    LV_LOG_WARN("Deprecated: use the normal text_align style property instead");
-    lv_obj_set_style_text_align(obj, align, 0);
-
-    switch(align) {
-        default:
-        case LV_TEXT_ALIGN_LEFT:
-            lv_obj_align(lv_textarea_get_label(obj), LV_ALIGN_TOP_LEFT, 0, 0);
-            break;
-        case LV_TEXT_ALIGN_RIGHT:
-            lv_obj_align(lv_textarea_get_label(obj), LV_ALIGN_TOP_RIGHT, 0, 0);
-            break;
-        case LV_TEXT_ALIGN_CENTER:
-            lv_obj_align(lv_textarea_get_label(obj), LV_ALIGN_TOP_MID, 0, 0);
-            break;
-    }
-}
-
 /*=====================
  * Getter functions
  *====================*/

@@ -181,7 +181,21 @@ typedef struct _lv_obj_t {
     uint16_t style_cnt  : 6;
     uint16_t h_layout   : 1;
     uint16_t w_layout   : 1;
-} lv_obj_t;
+    
+    uint32_t id;
+ }lv_obj_t;
+ 
+ 
+static inline void lv_obj_set_id(lv_obj_t * obj, uint32_t id) 
+{
+  obj->id = id;
+}
+
+static inline uint32_t lv_obj_get_id(lv_obj_t * obj) 
+{
+  return obj->id;
+}
+
 
 
 /**********************
