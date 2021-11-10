@@ -33,7 +33,6 @@ Rename this file to lodepng.cpp to use it for C++, or to lodepng.c to use it for
 
 #ifdef LODEPNG_COMPILE_DISK
 #include <limits.h> /* LONG_MAX */
-#include <stdio.h> /* file handling */
 #endif /* LODEPNG_COMPILE_DISK */
 
 #ifdef LODEPNG_COMPILE_ALLOCATORS
@@ -2311,7 +2310,7 @@ static unsigned zlib_compress(unsigned char** out, size_t* outsize, const unsign
 static unsigned zlib_decompress(unsigned char** out, size_t* outsize, size_t expected_size,
                                 const unsigned char* in, size_t insize, const LodePNGDecompressSettings* settings) {
   if(!settings->custom_zlib) return 87; /*no custom zlib function provided */
-  (void)expected_size;
+  LV_UNUSED(expected_size);
   return settings->custom_zlib(out, outsize, in, insize, settings);
 }
 #endif /*LODEPNG_COMPILE_DECODER*/
@@ -2553,6 +2552,8 @@ unsigned char* lodepng_chunk_find(unsigned char* chunk, unsigned char* end, cons
     if(lodepng_chunk_type_equals(chunk, type)) return chunk;
     chunk = lodepng_chunk_next(chunk, end);
   }
+
+  return 0; /*Shouldn't reach this*/
 }
 
 const unsigned char* lodepng_chunk_find_const(const unsigned char* chunk, const unsigned char* end, const char type[5]) {
@@ -2561,6 +2562,8 @@ const unsigned char* lodepng_chunk_find_const(const unsigned char* chunk, const 
     if(lodepng_chunk_type_equals(chunk, type)) return chunk;
     chunk = lodepng_chunk_next_const(chunk, end);
   }
+
+  return 0; /*Shouldn't reach this*/
 }
 
 unsigned lodepng_chunk_append(unsigned char** out, size_t* outsize, const unsigned char* chunk) {

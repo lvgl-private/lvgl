@@ -34,6 +34,10 @@
  *Requires `LV_COLOR_DEPTH = 32` colors and the screen's `bg_opa` should be set to non LV_OPA_COVER value*/
 #define LV_COLOR_SCREEN_TRANSP 0
 
+/* Adjust color mix functions rounding. GPUs might calculate color mix (blending) differently.
+ * 0: round down, 64: round up from x.75, 128: round up from half, 192: round up from x.25, 254: round up */
+#define LV_COLOR_MIX_ROUND_OFS (LV_COLOR_DEPTH == 32 ? 0: 128)
+
 /*Images pixels with this color will not be drawn if they are chroma keyed)*/
 #define LV_COLOR_CHROMA_KEY lv_color_hex(0x00ff00)         /*pure green*/
 
@@ -61,6 +65,10 @@
 #  define LV_MEM_CUSTOM_FREE    free
 #  define LV_MEM_CUSTOM_REALLOC realloc
 #endif     /*LV_MEM_CUSTOM*/
+
+/*Number of the intermediate memory buffer used during rendering and other internal processing mechanisms.
+ *You will see an error log message if there wasn't enough buffers. */
+#define LV_MEM_BUF_MAX_NUM 16
 
 /*Use the standard `memcpy` and `memset` instead of LVGL's own functions. (Might or might not be faster).*/
 #define LV_MEMCPY_MEMSET_STD 0
@@ -152,7 +160,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 /*Use exnternal renderer*/
 #define LV_USE_EXTERNAL_RENDERER 0
 
-/*Use SDL renderer API*/
+/*Use SDL renderer API. Requires LV_USE_EXTERNAL_RENDERER*/
 #define LV_USE_GPU_SDL 0
 #if LV_USE_GPU_SDL
 #  define LV_GPU_SDL_INCLUDE_PATH <SDL2/SDL.h>
@@ -213,10 +221,16 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 
 /*1: Show CPU usage and FPS count in the right bottom corner*/
 #define LV_USE_PERF_MONITOR 0
+#if LV_USE_PERF_MONITOR
+#define LV_USE_PERF_MONITOR_POS LV_ALIGN_BOTTOM_RIGHT
+#endif
 
 /*1: Show the used memory and the memory fragmentation in the left bottom corner
  * Requires LV_MEM_CUSTOM = 0*/
 #define LV_USE_MEM_MONITOR 0
+#if LV_USE_PERF_MONITOR
+#define LV_USE_MEM_MONITOR_POS LV_ALIGN_BOTTOM_LEFT
+#endif
 
 /*1: Draw random colored rectangles over the redrawn areas*/
 #define LV_USE_REFR_DEBUG 0
@@ -397,7 +411,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 
 #define LV_USE_ARC        1
 
-#define LV_USE_ANIMIMG	  1
+#define LV_USE_ANIMIMG    1
 
 #define LV_USE_BAR        1
 
@@ -563,6 +577,9 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 /*Memory used by FreeType to cache characters [bytes] (-1: no caching)*/
 # define LV_FREETYPE_CACHE_SIZE (16 * 1024)
 #endif
+
+/*Rlottie library*/
+#define LV_USE_RLOTTIE 0
 
 /*-----------
  * Others
