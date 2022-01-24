@@ -27,9 +27,9 @@ jobs:
     - name: Building ${{ matrix.build_option }}
       run: python tests/main.py --build-option=${{ matrix.build_option }} build
 
-  test:
+  test-native:
     runs-on: ubuntu-latest
-    name: Executable Tests
+    name: amd64 Executable Tests
     steps:
     - uses: actions/checkout@v2
     - uses: ammaraskar/gcc-problem-matcher@master
@@ -43,3 +43,35 @@ jobs:
       with:
         fail_ci_if_error: true
         verbose: true
+  test-cross:
+    # The host should always be linux
+    runs-on: ubuntu-latest
+    name: ${{ matrix.arch }} Executable Tests
+
+    # Run steps on a matrix of 3 arch/distro combinations
+    strategy:
+      matrix:
+        arch: [ 'aarch64', 'armv6', 'armv7' ]
+
+    steps:
+      - uses: actions/checkout@v2.1.0
+      - uses: uraimo/run-on-arch-action@v2.1.1
+        name: Run tests
+        id: build
+        with:
+          arch: ${{ matrix.arch }}
+          distro: bullseye
+
+          # Not required, but speeds up builds
+          githubToken: ${{ github.token }}
+
+          # The shell to run commands with in the container
+          shell: /bin/bash
+
+          install: |
+            apt-get update -y
+            apt-get install -y gcc python3 libpng-dev ruby-full gcovr cmake
+            apt-get install -y build-essential
+
+          run: |
+            env ASAN_OPTIONS=detect_leaks=0 python3 tests/main.py --report test
